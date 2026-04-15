@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❤️ 5 Meses ❤️</title>
-    <script src="https://unpkg.com/snap-puzzle@0.1.2/snap-puzzle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
@@ -120,6 +119,9 @@
     </div>
 
     <script>
+        // --- MOTOR INTERNO SNAP-PUZZLE (Cargado localmente) ---
+        (function(g){var S=function(i,o){this.img=i;this.render=o.render;this.r=o.rows;this.c=o.columns;this.onStart=o.onStart;this.onComplete=o.onComplete;this.init()};S.prototype={init:function(){this.render.innerHTML="";this.render.style.display="grid";this.render.style.gridTemplateColumns="repeat("+this.c+",1fr)";var pw=this.img.width/this.c,ph=this.img.height/this.r;this.ps=[];for(var r=0;r<this.r;r++){for(var c=0;c<this.c;c++){var cv=document.createElement("canvas");cv.width=pw;cv.height=ph;cv.dataset.pos=this.ps.length;cv.getContext("2d").drawImage(this.img,c*pw,r*ph,pw,ph,0,0,pw,ph);this.ps.push(cv)}}this.shuf();if(this.onStart)this.onStart()},shuf:function(){this.ps.sort(()=>Math.random()-.5);this.ps.forEach(p=>{this.render.appendChild(p);p.onclick=()=>this.sw(p)})},sw:function(p){if(window.lp&&window.lp!==p){var c=[...this.render.children],i1=c.indexOf(p),i2=c.indexOf(window.lp);var t=document.createElement("div");this.render.insertBefore(t,p);this.render.insertBefore(p,window.lp);this.render.insertBefore(window.lp,t);this.render.removeChild(t);window.lp.style.outline="none";window.lp=null;this.ck()}else{if(window.lp)window.lp.style.outline="none";window.lp=p;p.style.outline="3px solid white"}},ck:function(){if([...this.render.children].every((p,i)=>parseInt(p.dataset.pos)===i)){if(this.onComplete)this.onComplete()}}};g.SnapPuzzle=S})(window);
+
         // --- RELOJES ---
         const fechaInicio = new Date('2025-11-15T00:00:00');
         const fechaSeisMeses = new Date('2026-05-15T00:00:00');
@@ -151,37 +153,19 @@
         setInterval(actualizarRelojes, 1000);
         actualizarRelojes();
 
-        // --- LLUVIA DE CORAZONES AL INICIO ---
+        // --- LLUVIA DE CORAZONES ---
         function lluviaInicial() {
-            var end = Date.now() + (2 * 1000); // 2 segundos de lluvia
+            var end = Date.now() + (2 * 1000);
             var colors = ['#ff4081', '#ff80ab', '#ffffff'];
-
             (function frame() {
-              confetti({
-                particleCount: 2,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: colors
-              });
-              confetti({
-                particleCount: 2,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: colors
-              });
-
-              if (Date.now() < end) {
-                requestAnimationFrame(frame);
-              }
+                confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
 
         // --- PUZZLE ---
         let startTime, timerInterval, gameStarted = false;
-        const container = document.getElementById('puzzle-container');
-        const resetBtn = document.getElementById('reset-puzzle');
         const bestDisplay = document.getElementById('best-time');
 
         function formatTime(seconds) {
@@ -191,77 +175,55 @@
         }
 
         function initPuzzle() {
-    // 1. Limpieza inicial
-    if (window.timerInterval) clearInterval(window.timerInterval);
-    gameStarted = false;
-    document.getElementById('current-time').innerText = "00:00";
-    document.getElementById('puzzle-message').style.display = 'none';
-    const resetBtn = document.getElementById('reset-puzzle');
-    if (resetBtn) resetBtn.style.display = 'none';
-    
-    const container = document.getElementById('puzzle-container');
-    container.innerHTML = '🧩 Cargando juego...';
-
-    // 2. Intentar cargar la imagen
-    const img = new Image();
-    img.src = 'puzzle.jpg'; 
-
-    img.onload = function() {
-        console.log("✅ Imagen cargada correctamente");
-
-        // 3. Verificación de la librería con reintento inteligente
-        function launch() {
-            if (typeof SnapPuzzle === 'undefined') {
-                console.log("⏳ Esperando librería SnapPuzzle...");
-                setTimeout(launch, 1000); // Espera 1 segundo completo para no saturar la consola
-                return;
-            }
-
-            console.log("🚀 Librería lista, iniciando puzzle...");
-            container.innerHTML = '';
+            if (window.timerInterval) clearInterval(window.timerInterval);
+            gameStarted = false;
+            document.getElementById('current-time').innerText = "00:00";
+            document.getElementById('puzzle-message').style.display = 'none';
+            const resetBtn = document.getElementById('reset-puzzle');
+            resetBtn.style.display = 'none';
             
-            new SnapPuzzle(img, { 
-                render: container, 
-                rows: 4, 
-                columns: 4,
-                onStart: function() {
-                    if (!gameStarted) {
-                        gameStarted = true;
-                        startTime = Date.now();
-                        window.timerInterval = setInterval(() => {
-                            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                            document.getElementById('current-time').innerText = formatTime(elapsed);
-                        }, 1000);
-                    }
-                },
-                onComplete: function() {
-                    clearInterval(window.timerInterval);
-                    const finalTime = Math.floor((Date.now() - startTime) / 1000);
-                    document.getElementById('puzzle-message').style.display = 'block';
-                    if (resetBtn) resetBtn.style.display = 'block';
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    alert("¡Lo lograste mi amor! ❤️");
-                }
-            });
-        }
-        
-        launch();
-    };
+            const container = document.getElementById('puzzle-container');
+            container.innerHTML = '🧩 Cargando desafío...';
 
-    img.onerror = function() {
-        console.error("❌ No se encontró puzzle.jpg");
-        container.innerHTML = '❌ Error: No se encontró la imagen.';
-    };
-}
+            const img = new Image();
+            img.src = 'puzzle.jpg'; 
+
+            img.onload = function() {
+                container.innerHTML = '';
+                new SnapPuzzle(img, { 
+                    render: container, rows: 4, columns: 4,
+                    onStart: function() {
+                        if (!gameStarted) {
+                            gameStarted = true;
+                            startTime = Date.now();
+                            window.timerInterval = setInterval(() => {
+                                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                                document.getElementById('current-time').innerText = formatTime(elapsed);
+                            }, 1000);
+                        }
+                    },
+                    onComplete: function() {
+                        clearInterval(window.timerInterval);
+                        const finalTime = Math.floor((Date.now() - startTime) / 1000);
+                        const savedBest = localStorage.getItem('mejorTiempoPuzzle');
+                        if (!savedBest || finalTime < parseInt(savedBest)) {
+                            localStorage.setItem('mejorTiempoPuzzle', finalTime);
+                            bestDisplay.innerText = formatTime(finalTime);
+                        }
+                        document.getElementById('puzzle-message').style.display = 'block';
+                        resetBtn.style.display = 'block';
+                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    }
+                });
+            };
+            img.onerror = () => container.innerHTML = '❌ Error: No se encontró puzzle.jpg';
+        }
 
         const savedBest = localStorage.getItem('mejorTiempoPuzzle');
         if (savedBest) bestDisplay.innerText = formatTime(parseInt(savedBest));
 
-        window.onload = function() {
-            initPuzzle();
-            lluviaInicial(); // Llama a la lluvia apenas carga
-        };
-        resetBtn.onclick = initPuzzle;
+        window.onload = () => { initPuzzle(); lluviaInicial(); };
+        document.getElementById('reset-puzzle').onclick = initPuzzle;
 
         // --- EASTER EGG ANILLO ---
         let clicksAnillo = 0;
