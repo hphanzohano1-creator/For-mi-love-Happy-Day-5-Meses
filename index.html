@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❤️ 5 Meses ❤️</title>
-    <script src="https://cdn.jsdelivr.net/npm/snap-puzzle@0.1.2/snap-puzzle.min.js"></script>
+    <script src="https://unpkg.com/snap-puzzle@0.1.2/snap-puzzle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
@@ -190,7 +190,7 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        function initPuzzle() {
+function initPuzzle() {
             clearInterval(timerInterval);
             gameStarted = false;
             document.getElementById('current-time').innerText = "00:00";
@@ -199,13 +199,21 @@
             container.innerHTML = '🧩 Cargando...';
 
             const img = new Image();
-            // Al ser un archivo local en tu GitHub, ya no necesitas crossOrigin
-            img.src = 'puzzle.jpg'; // <--- ASEGÚRATE QUE EL NOMBRE SEA IDÉNTICO (mayúsculas/minúsculas cuentan)
+            img.src = 'puzzle.jpg'; 
             
             img.onload = function() {
                 container.innerHTML = '';
+                
+                // --- ESTO ES LO QUE TIENES QUE AGREGAR ---
+                if (typeof SnapPuzzle === 'undefined') {
+                    setTimeout(initPuzzle, 500); 
+                    return;
+                }
+                // ----------------------------------------
+
                 new SnapPuzzle(img, { 
-                    render: container, rows: 4, columns: 4, // ... el resto del código sigue igual
+                    render: container, rows: 4, columns: 4,
+                    // ... el resto sigue igual
                     
                     onStart: function() {
                         if (!gameStarted) {
