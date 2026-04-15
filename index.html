@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❤️ 5 Meses ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/snap-puzzle@0.1.2/snap-puzzle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            overflow-x: hidden; overflow-y: auto;
+            background: linear-gradient(to top, #e65c00 0%, #a83279 50%, #2b1055 100%);
+            background-attachment: fixed;
+            font-family: 'Georgia', serif; color: white;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 50px 0;
+        }
+
+        .content { position: relative; z-index: 2; text-align: center; width: 90%; max-width: 600px; }
+        
+        .dedicatoria-box {
+            background: rgba(0, 0, 0, 0.6); padding: 35px;
+            border-radius: 40px; border: 2px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .stats-puzzle {
+            display: flex; justify-content: space-around;
+            margin-bottom: 10px; font-size: 0.9rem; color: #ffeb3b;
+        }
+
+        #puzzle-container {
+            width: 100%; margin: 10px auto 30px; 
+            min-height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        #puzzle-container canvas {
+            width: 100% !important; height: auto !important;
+            border: 3px solid rgba(255, 255, 255, 0.4); border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .btn-reset {
+            display: none; 
+            margin: 15px auto; padding: 10px 20px;
+            background: #ff4081; color: white;
+            border: none; border-radius: 25px;
+            cursor: pointer; font-family: 'Georgia', serif;
+            font-size: 1rem; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .contador-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
+        .tiempo-item {
+            background: rgba(255, 255, 255, 0.1); padding: 12px;
+            border-radius: 18px; min-width: 70px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .numero { display: block; font-size: 1.6rem; font-weight: bold; color: #ffb3c1; }
+        
+        h1 { font-size: 2.2rem; margin-bottom: 25px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        h2 { font-size: 1.5rem; margin-top: 40px; color: #ffb3c1; border-bottom: 1px solid rgba(255,255,255,0.2); display: inline-block; padding-bottom: 5px; }
+        
+        #boda-anillo { cursor: pointer; display: inline-block; transition: transform 0.2s ease; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h1>❤️ Feliz 5 Meses Mi Corazón ❤️</h1>
+
+        <div class="dedicatoria-box">
+            <p style="font-size: 1.15rem; line-height: 1.6;">
+                "Hola corazón mío mi poto loco jejeje. Ya son 5 meses caminando juntitos en las buenas y en las malas y en las peores, superando la distancia y aprendiendo que nuestro amor es fuerte a pesar de las equivocaciones que cometemos y los arreglamos conversando como es debido el tenerte en mi vida para mi es algo que realmente importante, algo único que jamas pensé que viviría Por Dios y por ti mi amor Gracias de todo Corazón mi vida. Te amo con todo mi ser y alma mi vida, te amo María Constanza. Feliz 5 meses Juntitos." Vamos por mucho tiempo más juntitos mi amor. Por cierto, se me olvidaba que aquí se va a encontrar un (Easter Egg) al igual que en los próximos juegos, yo no le diré nada 🤭.
+            </p>
+
+            <p style="font-weight: bold; color: #ffb3c1; margin-top: 25px;">Aquí le va pequeño Juego para ver que tan hábil es 🤭. Consejo, Saque una Captura al terminarlo 📸. </p>
+            
+            <div class="stats-puzzle">
+                <span>⏱️ Tiempo: <span id="current-time">00:00</span></span>
+                <span>🏆 Mejor Récord: <span id="best-time">--:--</span></span>
+            </div>
+
+            <div id="puzzle-container">🧩 Cargando desafío...</div>
+            <button id="reset-puzzle" class="btn-reset">🔄 Volver a intentar (Reiniciar)</button>
+
+            <div id="puzzle-message" style="display:none; color:#ffeb3b; margin: 20px 0; font-weight: bold; font-size: 1.1rem;">
+                ¡Lo lograste mi amor, Felicidades! ❤️ Además encontraste una pista mi amor, un Easter Egg menos que tienes que encontrar 💋
+            </div>
+
+            <h2>Tiempo Juntitos</h2>
+            <div class="contador-container">
+                <div class="tiempo-item"><span class="numero" id="dias-j">0</span>Días</div>
+                <div class="tiempo-item"><span class="numero" id="horas-j">0</span>Hrs</div>
+                <div class="tiempo-item"><span class="numero" id="min-j">0</span>Min</div>
+                <div class="tiempo-item"><span class="numero" id="seg-j">0</span>Seg</div>
+            </div>
+
+            <h2>Para Casarnos <span id="boda-anillo">💍</span></h2>
+            <div class="contador-container">
+                <div class="tiempo-item"><span class="numero" id="dias-b">0</span>Días</div>
+                <div class="tiempo-item"><span class="numero" id="horas-b">0</span>Hrs</div>
+                <div class="tiempo-item"><span class="numero" id="min-b">0</span>Min</div>
+                <div class="tiempo-item"><span class="numero" id="seg-b">0</span>Seg</div>
+            </div>
+
+            <h2>Para nuestros 6 meses...</h2>
+            <div class="contador-container">
+                <div class="tiempo-item"><span class="numero" id="dias-6">0</span>Días</div>
+                <div class="tiempo-item"><span class="numero" id="horas-6">0</span>Hrs</div>
+                <div class="tiempo-item"><span class="numero" id="min-6">0</span>Min</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- RELOJES ---
+        const fechaInicio = new Date('2025-11-15T00:00:00');
+        const fechaSeisMeses = new Date('2026-05-15T00:00:00');
+        const fechaBoda = new Date('2027-07-15T00:00:00');
+
+        function actualizarRelojes() {
+            const ahora = new Date();
+            const difJ = ahora - fechaInicio;
+            document.getElementById('dias-j').innerText = Math.floor(difJ/86400000);
+            document.getElementById('horas-j').innerText = Math.floor((difJ%86400000)/3600000);
+            document.getElementById('min-j').innerText = Math.floor((difJ%3600000)/60000);
+            document.getElementById('seg-j').innerText = Math.floor((difJ%60000)/1000);
+
+            const difB = fechaBoda - ahora;
+            if (difB > 0) {
+                document.getElementById('dias-b').innerText = Math.floor(difB/86400000);
+                document.getElementById('horas-b').innerText = Math.floor((difB%86400000)/3600000);
+                document.getElementById('min-b').innerText = Math.floor((difB%3600000)/60000);
+                document.getElementById('seg-b').innerText = Math.floor((difB%60000)/1000);
+            }
+
+            const difS = fechaSeisMeses - ahora;
+            if (difS > 0) {
+                document.getElementById('dias-6').innerText = Math.floor(difS/86400000);
+                document.getElementById('horas-6').innerText = Math.floor((difS%86400000)/3600000);
+                document.getElementById('min-6').innerText = Math.floor((difS%3600000)/60000);
+            }
+        }
+        setInterval(actualizarRelojes, 1000);
+        actualizarRelojes();
+
+        // --- LLUVIA DE CORAZONES AL INICIO ---
+        function lluviaInicial() {
+            var end = Date.now() + (2 * 1000); // 2 segundos de lluvia
+            var colors = ['#ff4081', '#ff80ab', '#ffffff'];
+
+            (function frame() {
+              confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors
+              });
+              confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            }());
+        }
+
+        // --- PUZZLE ---
+        let startTime, timerInterval, gameStarted = false;
+        const container = document.getElementById('puzzle-container');
+        const resetBtn = document.getElementById('reset-puzzle');
+        const bestDisplay = document.getElementById('best-time');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function initPuzzle() {
+            clearInterval(timerInterval);
+            gameStarted = false;
+            document.getElementById('current-time').innerText = "00:00";
+            document.getElementById('puzzle-message').style.display = 'none';
+            resetBtn.style.display = 'none';
+            container.innerHTML = '🧩 Cargando...';
+
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1d/17/99/3a/un-lugar-imperdible-para.jpg?w=600';
+            
+            img.onload = function() {
+                container.innerHTML = '';
+                new SnapPuzzle(img, { 
+                    render: container, rows: 4, columns: 4,
+                    onStart: function() {
+                        if (!gameStarted) {
+                            gameStarted = true;
+                            startTime = Date.now();
+                            timerInterval = setInterval(() => {
+                                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                                document.getElementById('current-time').innerText = formatTime(elapsed);
+                            }, 1000);
+                        }
+                    },
+                    onComplete: function() {
+                        clearInterval(timerInterval);
+                        const finalTime = Math.floor((Date.now() - startTime) / 1000);
+                        const savedBest = localStorage.getItem('mejorTiempoPuzzle');
+                        if (!savedBest || finalTime < parseInt(savedBest)) {
+                            localStorage.setItem('mejorTiempoPuzzle', finalTime);
+                            bestDisplay.innerText = formatTime(finalTime);
+                        }
+                        resetBtn.style.display = 'block';
+                        document.getElementById('puzzle-message').style.display = 'block';
+                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                        alert("¡Lo lograste mi amor! ❤️");
+                    }
+                });
+            };
+        }
+
+        const savedBest = localStorage.getItem('mejorTiempoPuzzle');
+        if (savedBest) bestDisplay.innerText = formatTime(parseInt(savedBest));
+
+        window.onload = function() {
+            initPuzzle();
+            lluviaInicial(); // Llama a la lluvia apenas carga
+        };
+        resetBtn.onclick = initPuzzle;
+
+        // --- EASTER EGG ANILLO ---
+        let clicksAnillo = 0;
+        const mensajes = ["👀 ¡Que sucede aquí?!", "🤔 ¿Segura que es aquí?", "🤷‍♂️ Bueno, veamos...", "😱 ¡Parece que si hay algo aquí bebe!", "😀 ¡Siguele, siguele!", " 🫣¡Ya Casi amor, ya casi!", "🙈 ¡Vamos, uno más mi vida!", " Genial Lo lograste"];
+        
+        document.getElementById('boda-anillo').onclick = () => {
+            clicksAnillo++;
+            if (clicksAnillo < mensajes.length) {
+                alert(mensajes[clicksAnillo - 1]);
+            } else {
+                confetti({ particleCount: 200, spread: 90, colors: ['#ff4081', '#ffffff', '#ffeb3b'] });
+                alert("¡Felicidades Amorcito 🎉, Ganaste una Caja de Chocolates 🍫 La Fête Chocolat!, Para hacerlo valido tiene que mostrar una captura de pantalla de este mensaje 📸. Valido solo 1 vez ❤️");
+                clicksAnillo = 0;
+            }
+        };
+    </script>
+</body>
+</html>
