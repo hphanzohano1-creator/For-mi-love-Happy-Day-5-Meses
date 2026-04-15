@@ -191,50 +191,66 @@
         }
 
         function initPuzzle() {
-    clearInterval(timerInterval);
+    // 1. Limpieza inicial
+    if (window.timerInterval) clearInterval(window.timerInterval);
     gameStarted = false;
     document.getElementById('current-time').innerText = "00:00";
     document.getElementById('puzzle-message').style.display = 'none';
-    resetBtn.style.display = 'none';
-    container.innerHTML = '🧩 Cargando...';
+    const resetBtn = document.getElementById('reset-puzzle');
+    if (resetBtn) resetBtn.style.display = 'none';
+    
+    const container = document.getElementById('puzzle-container');
+    container.innerHTML = '🧩 Cargando juego...';
 
+    // 2. Intentar cargar la imagen
     const img = new Image();
-    img.src = 'puzzle.jpg'; // <--- VERIFICA ESTE NOMBRE EN TU GITHUB
+    img.src = 'puzzle.jpg'; 
 
     img.onload = function() {
         console.log("✅ Imagen cargada correctamente");
-        container.innerHTML = '';
-        if (typeof SnapPuzzle === 'undefined') {
-            console.log("⚠️ SnapPuzzle no definido, reintentando...");
-            setTimeout(initPuzzle, 500);
-            return;
-        }
-        new SnapPuzzle(img, { 
-            render: container, rows: 4, columns: 4,
-            onStart: function() {
-                if (!gameStarted) {
-                    gameStarted = true;
-                    startTime = Date.now();
-                    timerInterval = setInterval(() => {
-                        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                        document.getElementById('current-time').innerText = formatTime(elapsed);
-                    }, 1000);
-                }
-            },
-            onComplete: function() {
-                clearInterval(timerInterval);
-                const finalTime = Math.floor((Date.now() - startTime) / 1000);
-                document.getElementById('reset-puzzle').style.display = 'block';
-                document.getElementById('puzzle-message').style.display = 'block';
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                alert("¡Lo lograste mi amor! ❤️");
+
+        // 3. Verificación de la librería con reintento inteligente
+        function launch() {
+            if (typeof SnapPuzzle === 'undefined') {
+                console.log("⏳ Esperando librería SnapPuzzle...");
+                setTimeout(launch, 1000); // Espera 1 segundo completo para no saturar la consola
+                return;
             }
-        });
+
+            console.log("🚀 Librería lista, iniciando puzzle...");
+            container.innerHTML = '';
+            
+            new SnapPuzzle(img, { 
+                render: container, 
+                rows: 4, 
+                columns: 4,
+                onStart: function() {
+                    if (!gameStarted) {
+                        gameStarted = true;
+                        startTime = Date.now();
+                        window.timerInterval = setInterval(() => {
+                            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                            document.getElementById('current-time').innerText = formatTime(elapsed);
+                        }, 1000);
+                    }
+                },
+                onComplete: function() {
+                    clearInterval(window.timerInterval);
+                    const finalTime = Math.floor((Date.now() - startTime) / 1000);
+                    document.getElementById('puzzle-message').style.display = 'block';
+                    if (resetBtn) resetBtn.style.display = 'block';
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    alert("¡Lo lograste mi amor! ❤️");
+                }
+            });
+        }
+        
+        launch();
     };
 
     img.onerror = function() {
-        console.error("❌ ERROR: No se pudo encontrar la imagen 'puzzle.jpg'. Revisa el nombre del archivo en GitHub.");
-        container.innerHTML = '❌ Error al cargar la imagen. Revisa la consola (F12).';
+        console.error("❌ No se encontró puzzle.jpg");
+        container.innerHTML = '❌ Error: No se encontró la imagen.';
     };
 }
 
