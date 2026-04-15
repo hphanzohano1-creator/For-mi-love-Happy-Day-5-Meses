@@ -190,7 +190,7 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-function initPuzzle() {
+        function initPuzzle() {
             clearInterval(timerInterval);
             gameStarted = false;
             document.getElementById('current-time').innerText = "00:00";
@@ -203,18 +203,15 @@ function initPuzzle() {
             
             img.onload = function() {
                 container.innerHTML = '';
-                
-                // --- ESTO ES LO QUE TIENES QUE AGREGAR ---
                 if (typeof SnapPuzzle === 'undefined') {
                     setTimeout(initPuzzle, 500); 
                     return;
                 }
-                // ----------------------------------------
-
-                new SnapPuzzle(img, { 
-                    render: container, rows: 4, columns: 4,
-                    // ... el resto sigue igual
-                    
+                // Aquí lanzamos el puzzle
+                window.puzzleGame = new SnapPuzzle(img, { 
+                    render: container, 
+                    rows: 4, 
+                    columns: 4,
                     onStart: function() {
                         if (!gameStarted) {
                             gameStarted = true;
@@ -231,9 +228,9 @@ function initPuzzle() {
                         const savedBest = localStorage.getItem('mejorTiempoPuzzle');
                         if (!savedBest || finalTime < parseInt(savedBest)) {
                             localStorage.setItem('mejorTiempoPuzzle', finalTime);
-                            bestDisplay.innerText = formatTime(finalTime);
+                            document.getElementById('best-time').innerText = formatTime(finalTime);
                         }
-                        resetBtn.style.display = 'block';
+                        document.getElementById('reset-puzzle').style.display = 'block';
                         document.getElementById('puzzle-message').style.display = 'block';
                         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                         alert("¡Lo lograste mi amor! ❤️");
