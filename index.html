@@ -199,13 +199,14 @@
             container.innerHTML = '🧩 Cargando...';
 
             const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1d/17/99/3a/un-lugar-imperdible-para.jpg?w=600';
+            // Al ser un archivo local en tu GitHub, ya no necesitas crossOrigin
+            img.src = 'puzzle.jpg'; // <--- ASEGÚRATE QUE EL NOMBRE SEA IDÉNTICO (mayúsculas/minúsculas cuentan)
             
             img.onload = function() {
                 container.innerHTML = '';
                 new SnapPuzzle(img, { 
-                    render: container, rows: 4, columns: 4,
+                    render: container, rows: 4, columns: 4, // ... el resto del código sigue igual
+                    
                     onStart: function() {
                         if (!gameStarted) {
                             gameStarted = true;
