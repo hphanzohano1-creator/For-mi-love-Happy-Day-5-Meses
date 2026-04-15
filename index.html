@@ -191,53 +191,52 @@
         }
 
         function initPuzzle() {
-            clearInterval(timerInterval);
-            gameStarted = false;
-            document.getElementById('current-time').innerText = "00:00";
-            document.getElementById('puzzle-message').style.display = 'none';
-            resetBtn.style.display = 'none';
-            container.innerHTML = '🧩 Cargando...';
+    clearInterval(timerInterval);
+    gameStarted = false;
+    document.getElementById('current-time').innerText = "00:00";
+    document.getElementById('puzzle-message').style.display = 'none';
+    resetBtn.style.display = 'none';
+    container.innerHTML = '🧩 Cargando...';
 
-            const img = new Image();
-            img.src = 'puzzle.jpg'; 
-            
-            img.onload = function() {
-                container.innerHTML = '';
-                if (typeof SnapPuzzle === 'undefined') {
-                    setTimeout(initPuzzle, 500); 
-                    return;
-                }
-                // Aquí lanzamos el puzzle
-                window.puzzleGame = new SnapPuzzle(img, { 
-                    render: container, 
-                    rows: 4, 
-                    columns: 4,
-                    onStart: function() {
-                        if (!gameStarted) {
-                            gameStarted = true;
-                            startTime = Date.now();
-                            timerInterval = setInterval(() => {
-                                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                                document.getElementById('current-time').innerText = formatTime(elapsed);
-                            }, 1000);
-                        }
-                    },
-                    onComplete: function() {
-                        clearInterval(timerInterval);
-                        const finalTime = Math.floor((Date.now() - startTime) / 1000);
-                        const savedBest = localStorage.getItem('mejorTiempoPuzzle');
-                        if (!savedBest || finalTime < parseInt(savedBest)) {
-                            localStorage.setItem('mejorTiempoPuzzle', finalTime);
-                            document.getElementById('best-time').innerText = formatTime(finalTime);
-                        }
-                        document.getElementById('reset-puzzle').style.display = 'block';
-                        document.getElementById('puzzle-message').style.display = 'block';
-                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                        alert("¡Lo lograste mi amor! ❤️");
-                    }
-                });
-            };
+    const img = new Image();
+    img.src = 'puzzle.jpg'; // <--- VERIFICA ESTE NOMBRE EN TU GITHUB
+
+    img.onload = function() {
+        console.log("✅ Imagen cargada correctamente");
+        container.innerHTML = '';
+        if (typeof SnapPuzzle === 'undefined') {
+            console.log("⚠️ SnapPuzzle no definido, reintentando...");
+            setTimeout(initPuzzle, 500);
+            return;
         }
+        new SnapPuzzle(img, { 
+            render: container, rows: 4, columns: 4,
+            onStart: function() {
+                if (!gameStarted) {
+                    gameStarted = true;
+                    startTime = Date.now();
+                    timerInterval = setInterval(() => {
+                        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                        document.getElementById('current-time').innerText = formatTime(elapsed);
+                    }, 1000);
+                }
+            },
+            onComplete: function() {
+                clearInterval(timerInterval);
+                const finalTime = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('reset-puzzle').style.display = 'block';
+                document.getElementById('puzzle-message').style.display = 'block';
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                alert("¡Lo lograste mi amor! ❤️");
+            }
+        });
+    };
+
+    img.onerror = function() {
+        console.error("❌ ERROR: No se pudo encontrar la imagen 'puzzle.jpg'. Revisa el nombre del archivo en GitHub.");
+        container.innerHTML = '❌ Error al cargar la imagen. Revisa la consola (F12).';
+    };
+}
 
         const savedBest = localStorage.getItem('mejorTiempoPuzzle');
         if (savedBest) bestDisplay.innerText = formatTime(parseInt(savedBest));
